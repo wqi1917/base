@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.msggw.dao.AccountAppDaoMapper">
+<resultMap type="AccountAppPO" id="AccountAppPOMap">  
+</resultMap>  
+<!--  新增记录  -->  
+    <insert id="insert" parameterType="AccountAppPO" useGeneratedKeys="true" keyProperty="id">  
+    	insert into accountapp(id,account,appkey,status,nickname,createtime,lastmodifytime) 
+    	values(#{id},#{account},#{appkey},#{status},#{nickname},#{createtime},#{lastmodifytime}) 
+    </insert>  
+    
+  
+<!--  删除记录  -->      
+    <delete id="deleteByAccount" parameterType="long">  
+       delete from accountapp where account = #{account}  
+    </delete>  
+ 
+<!--  根据appkey删除记录  -->      
+    <delete id="deleteByAppkey" parameterType="String">  
+       delete from accountapp where appkey = #{appkey}  
+    </delete>    
+<!--  根据appkey删除记录  -->      
+    <delete id="deleteByAccountAppkey" parameterType="map">  
+       delete from accountapp where account = #{account} and appkey = #{appkey}  
+    </delete>      
+
+<!--  根据appkey删除记录  -->      
+    <delete id="deleteByAccountnameAppkey" parameterType="map">  
+       delete from accountapp where account = (select account from accountinfo where accountname=#{accountname} ) and appkey = #{appkey}  
+    </delete>      
+
+<!--  修改记录  -->      
+    <update id="update" parameterType="map">  
+    	update accountapp set 
+    		nickname=#{nickname},
+		  	where account=#{account} and appkey = #{appkey}  
+    </update>
+    
+<!--  根据account 和appkey 查询记录  -->    
+    <select id="selectByAccountAppkey" resultType="AccountAppPOMap"  parameterType="map">  
+        select * from accountapp where account=#{account} and appkey = #{appkey}  
+    </select> 
+<!--   根据account获取  -->    
+    <select id="selectByAccount" resultMap="AccountAppPOMap" parameterType="map">  
+         select * from accountapp where account=#{account} 
+    </select>
+    
+<!--   根据appkey 分页获取  -->    
+    <select id="getListByappkey" resultMap="AccountAppPOMap" parameterType="map">  
+         select * from accountapp where appkey = #{appkey} limit #{begin},  #{size}
+    </select>
+
+<!--   获得当前页码指定数量的消息业务信息记录  -->    
+    <select id="getList" resultMap="AccountAppPOMap" parameterType="map">  
+         select * from accountapp limit #{begin},  #{size}
+    </select>
+    
+<!--   获得所有数据总数  -->    
+    <select id="getSize" resultType="int">  
+         select count(*) as count from accountapp
+    </select>
+    
+    <!--   获得所有数据总数  -->    
+    <select id="getSizeByappkey" resultType="int" parameterType="String">   
+         select count(*) as count from accountappwhere appkey = #{appkey}
+    </select>
+
+</mapper> 

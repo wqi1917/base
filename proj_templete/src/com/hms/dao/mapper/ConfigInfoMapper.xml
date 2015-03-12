@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.msggw.dao.ConfigInfoDaoMapper">
+<resultMap type="ConfigInfoVO" id="ConfigInfoVOMap">  
+</resultMap>  
+<!--  新增记录  -->  
+    <insert id="insert" parameterType="ConfigInfoVO" useGeneratedKeys="true" keyProperty="config_uuid">  
+    	insert into configinfo(config_uuid,direction,msgbiztype,msgbiztype_name,business_plat,upmsg_service,downmsg_service,callback_service,max_receiver_num,createtime) 
+    	values(#{config_uuid},#{direction},#{msgbiztype},#{msgbiztype_name},#{business_plat},#{upmsg_service},#{downmsg_service},#{callback_service},#{max_receiver_num},#{createtime})
+    </insert>  
+    
+    
+        
+    <insert id="insertbatch" parameterType="java.util.List">
+  <selectKey keyProperty="fetchTime" order="BEFORE"
+  resultType="java.lang.String">
+  SELECT CURRENT_TIMESTAMP()
+  </selectKey>
+  insert into kangaiduoyaodian ( depart1, depart2, product_name,
+  generic_name, img, product_specification, unit,
+  approval_certificate, manufacturer, marketPrice, vipPrice,
+  website, fetch_time, productdesc ) values
+  <foreach collection="list" item="item" index="index"
+  separator=",">
+  ( #{item.depart1}, #{item.depart2}, #{item.productName},
+  #{item.genericName}, #{item.img},
+  #{item.productSpecification}, #{item.unit},
+  #{item.approvalCertificate}, #{item.manufacturer},
+  #{item.marketprice}, #{item.vipprice}, #{item.website},
+  #{fetchTime}, #{item.productdesc} )
+  </foreach>
+  </insert>
+  
+  
+   <update id="updateOrders" parameterType="java.util.List">
+ update orders set state = '0' where no in
+ <foreach collection="list" item="nos" open="(" separator="," close=")">
+   #{nos}
+ </foreach>
+ </update>
+  
+  <!-- 通过主键集合批量删除记录 -->
+ 
+<delete id="batchRemoveUserByPks" parameterType="java.util.List">
+ 
+DELETE FROM LD_USER WHERE ID in 
+ 
+<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+ 
+#{item}
+ 
+</foreach>
+ 
+</delete>
+
+
+<update id="batchUpdate"  parameterType="java.util.List">
+      
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+                update test 
+                <set>
+                  test=${item.test}+1
+                </set>
+                where id = ${item.id}
+         </foreach>
+          
+    </update>
+
+
+<!--  删除记录  -->      
+    <delete id="delete" parameterType="int">  
+       delete from configinfo where config_uuid = #{config_uuid}  
+    </delete>  
+ 
+<!--  根据平台删除记录  -->      
+    <delete id="deleteByPlat" parameterType="String">  
+       delete from configinfo where business_plat = #{business_plat}  
+    </delete>      
+
+<!--  修改记录  -->      
+    <update id="update" parameterType="map">  
+       update configinfo set direction=#{configinfo.direction},msgbiztype=#{configinfo.msgbiztype},msgbiztype_name=#{configinfo.msgbiztype_name},
+       business_plat=#{configinfo.business_plat},upmsg_service=#{configinfo.upmsg_service},downmsg_service=#{configinfo.downmsg_service},callback_service=#{configinfo.callback_service},
+       max_receiver_num=#{configinfo.max_receiver_num} where config_uuid=#{config_uuid}  
+    </update>
+<!--  根据config_uuid查询记录  -->    
+    <select id="selectbyconfig_uuid" resultType="com.msggw.dao.vo.ConfigInfoVO" parameterType="int">  
+        select * from configinfo where config_uuid=#{config_uuid}  
+    </select> 
+<!--  根据msgbiztype查询记录  -->    
+    <select id="selectbymsgbiztype" resultType="com.msggw.dao.vo.ConfigInfoVO" parameterType="String">  
+        select * from configinfo where msgbiztype=#{msgbiztyped}  
+    </select> 
+<!--  根据business_plat查询记录  -->    
+    <select id="selectbybusiness_plat" resultMap="ConfigInfoVOMap" parameterType="String">  
+        select * from configinfo where business_plat=#{business_plat}  
+    </select>  
+
+<!--   获得当前页码指定数量的消息业务信息记录  -->    
+    <select id="getList" resultMap="ConfigInfoVOMap" parameterType="map">  
+         select * from configinfo limit #{begin},  #{size}
+    </select>
+    
+<!--   获得所有数据总数  -->    
+    <select id="getSize" resultType="int">  
+         select count(*) as count from configinfo
+    </select>
+<!--  根据msgbiztype或msgbiztyp_name获得查询到的所有消息业务信息记录  -->    
+    <select id="selectByMsgBiztypeOrName" resultMap="ConfigInfoVOMap" parameterType="map">  
+        select * from configinfo 
+        where msgbiztype=#{msgBiztypeOrName} or msgbiztype_name=#{msgBiztypeOrName} 
+        limit #{begin},  #{size}; 
+    </select>
+<!--  根据msgbiztype或msgbiztyp_name获得查询到的消息业务数量  -->    
+    <select id="getSelectByMsgBiztypeOrNameSize" resultType="int" parameterType="String">  
+        select count(*) as count from configinfo 
+        where msgbiztype=#{MsgBiztypeOrName} or msgbiztype_name=#{MsgBiztypeOrName} 
+    </select>
+   
+</mapper> 

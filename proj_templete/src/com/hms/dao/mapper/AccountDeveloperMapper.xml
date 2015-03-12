@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.msggw.dao.AccountDeveloperDaoMapper">
+<resultMap type="AccountDeveloperPO" id="AccountDeveloperPOMap">  
+</resultMap> 
+
+<resultMap type="AccountDeveloperVO" id="AccountDeveloperVOMap">  
+	<id property="account"/>
+	<result property="accountname"/>
+	<result property="phone"/>
+	<result property="email"/>
+	<result property="authgrade"/>
+	<result property="devstatus"/>
+	<result property="createtime"/>
+	<result property="lastmodifytime"/>
+</resultMap>  
+<!--  新增记录  -->  
+    <insert id="insert" parameterType="accountdeveloperPO" useGeneratedKeys="true" keyProperty="account">  
+    	insert into accountdeveloper(account,authgrade,devstatus,createtime,lastmodifytime) 
+    	values(#{account},#{authgrade},#{devstatus},#{createtime},#{lastmodifytime}) 
+    </insert>  
+  
+<!--  删除记录  -->      
+    <delete id="deleteByAccount" parameterType="long">  
+       delete from accountdeveloper where account = #{account}  
+    </delete>  
+ 
+<!--  删除记录  -->      
+    <delete id="deleteByAccountname" parameterType="String">  
+       delete from accountdeveloper where account = (select account from accountinfo where accountname = #{accountname})  
+    </delete>      
+
+<!--  修改记录  -->      
+    <update id="update" parameterType="map">  
+    	update accountdeveloper set 
+    		authgrade=#{accountdeveloper.authgrade},
+    		devstatus=#{accountdeveloper.devstatus},
+		  	lastmodifytime=#{accountdeveloper.lastmodifytime}
+		  	where account=#{accountdeveloper.account}  
+    </update>
+    
+<!--  根据account查询记录  -->    
+    <select id="selectByAccount" resultType="AccountDeveloperPOMap" parameterType="long">  
+        select * from accountdeveloper where account=#{account}  
+    </select> 
+<!--  根据account查询详细信息  -->    
+    <select id="getByAccount" resultType="AccountDeveloperVOMap" parameterType="String">  
+    	select a.account as account,  accountname, phone, email, authgrade , devstatus , d.createtime as createtime , d.lastmodifytime as lastmodifytime
+    	from accountdeveloper d
+    	left join account a on d.account = a.account 
+    	where d.account=#{account}  
+    </select> 
+
+<!--   获得当前页码指定数量的消息业务信息记录  -->    
+    <select id="getList" resultMap="AccountDeveloperVOMap" parameterType="map">  
+        select a.account as account,  accountname, phone, email, authgrade , devstatus , d.createtime as createtime , d.lastmodifytime as lastmodifytime
+    	from accountdeveloper d
+    	left join account a on d.account = a.account 
+    	limit #{begin},  #{size}
+    </select>
+    
+<!--   获得所有数据总数  -->    
+    <select id="getSize" resultType="int">  
+         select count(*) as count from accountdeveloper
+    </select>
+
+</mapper> 

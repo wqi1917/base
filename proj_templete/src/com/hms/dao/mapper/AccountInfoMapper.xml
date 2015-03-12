@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.msggw.dao.AccountInfoDaoMapper">
+<resultMap type="AccountInfoPO" id="AccountInfoPOMap">  
+</resultMap>  
+<!--  新增记录  -->  
+    <insert id="insert" parameterType="AccountInfoPO" useGeneratedKeys="true" keyProperty="id">  
+    	insert into accountinfo(id,account,accountname,password,pinpassword,phone,email,phoneauth,emailauth,createtime,lastmodifytime) 
+    	values(#{id},#{account},#{accountname},#{password},#{pinpassword},#{phone},#{email},#{phoneauth},#{emailauth},#{createtime},#{lastmodifytime}) 
+    </insert>  
+    
+<!--  批量新增  -->   
+    <insert id="insertBatch" parameterType="java.util.List">
+		<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+  			SELECT CURRENT_TIMESTAMP()
+  		</selectKey>
+	  		insert into accountinfo(id,account,accountname,password,pinpassword,phone,email,phoneauth,emailauth,createtime,lastmodifytime) 
+		 	values
+	  	<foreach collection="list" item="item" index="index" separator=",">
+		  	(#{item.id},#{item.account},#{item.accountname},#{item.password},#{item.pinpassword},#{item.phone},
+		  	#{item.email},#{item.phoneauth},#{item.emailauth},#{item.createtime},#{item.lastmodifytime}) 
+	  	</foreach>
+   </insert>
+  
+<!--  删除记录  -->      
+    <delete id="deleteByAccount" parameterType="long">  
+       delete from accountinfo where account = #{account}  
+    </delete>  
+ 
+<!--  根据平台删除记录  -->      
+    <delete id="deleteByName" parameterType="String">  
+       delete from accountinfo where accountname = #{accountname}  
+    </delete>      
+
+<!--  修改记录  -->      
+    <update id="update" parameterType="map">  
+    	update accountinfo set 
+    		accountname=#{accountinfo.accountname},
+    		password=#{accountinfo.password},
+    		pinpassword=#{accountinfo.pinpassword},
+    		phone=#{accountinfo.phone},
+		  	email=#{accountinfo.email},
+		  	phoneauth=#{accountinfo.phoneauth},
+		  	emailauth=#{accountinfo.emailauth},
+		  	lastmodifytime=#{accountinfo.lastmodifytime}
+		  	where account=#{accountinfo.account}  
+    </update>
+    
+    
+    <update id="batchUpdate"  parameterType="java.util.List">
+          <foreach collection="list" item="accountinfo" index="index" open="" close="" separator=";">
+                update accountinfo  
+                <set>
+		    		accountname=#{accountinfo.accountname},
+		    		password=#{accountinfo.password},
+		    		pinpassword=#{accountinfo.pinpassword},
+		    		phone=#{accountinfo.phone},
+				  	email=#{accountinfo.email},
+				  	phoneauth=#{accountinfo.phoneauth},
+				  	emailauth=#{accountinfo.emailauth},
+				  	lastmodifytime=#{accountinfo.lastmodifytime}
+                </set>
+                where account=#{accountinfo.account} 
+         </foreach>
+    </update>
+<!--  根据account查询记录  -->    
+    <select id="selectByAccount" resultType="com.msggw.dao.po.AccountInfoPO" parameterType="long">  
+        select * from accountinfo where account=#{account}  
+    </select> 
+<!--  根据accountname查询记录  -->    
+    <select id="selectByAccountName" resultType="com.msggw.dao.po.AccountInfoPO" parameterType="String">  
+        select * from accountinfo where accountname=#{accountname}  
+    </select> 
+<!--  根据phone查询记录  -->    
+    <select id="selectByPhone" resultMap="AccountInfoPOMap" parameterType="map">  
+         select * from accountinfo where phone=#{phone}
+    </select>
+
+<!--   获得当前页码指定数量的消息业务信息记录  -->    
+    <select id="getList" resultMap="AccountInfoPOMap" parameterType="map">  
+         select * from accountinfo limit #{begin},  #{size}
+    </select>
+    
+<!--   获得所有数据总数  -->    
+    <select id="getSize" resultType="int">  
+         select count(*) as count from accountinfo
+    </select>
+
+</mapper> 
